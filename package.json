@@ -1,15 +1,22 @@
 {
-  "name": "node",
+  "name": "noderecord",
   "version": "1.0.0",
-  "description": "",
+  "description": "node学习代码记录",
   "main": "node0.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luoZengCai/nodeRecord.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luoZengCai/nodeRecord/issues"
+  },
+  "homepage": "https://github.com/luoZengCai/nodeRecord#readme",
   "dependencies": {
-    "cpu-stat": "^2.0.1",
-    "nodemon": "^1.18.10"
+    "cpu-stat": "^2.0.1"
   }
 }
