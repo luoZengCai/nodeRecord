@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/luoZengCai/nodeRecord#readme",
   "dependencies": {
-    "cpu-stat": "^2.0.1"
+    "cpu-stat": "^2.0.1",
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.5",
+    "sequelize": "^4.43.0"
   }
 }
