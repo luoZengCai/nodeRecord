@@ -1,6 +1,14 @@
 const Koa = require('koa');
 const static = require('koa-static');
+const session = require('koa-session');
+const redisStore = require('koa-redis');//整合redis和session
+const redis = require('redis');//操纵redis
+const bodyparser = require('koa-bodyparser')
+const client = redis.createClient(6379,"localhost");
 const app = new Koa();
+
+//keys作用：用来对cookie进行签名(不是加密)
+app.keys = ['some secret', 'another secret'];
 
 //引入模板引擎
 const hbs = require('koa-hbs');
@@ -22,10 +30,17 @@ app.use(async (ctx,next) => {
     try {
         await next()
     } catch (error) {
+        // 系统日志
         console.log(error);
-        ctx.status = error.statusCode || error.status || 500;
-        ctx.body = error
-        // ctx.body = error.message
+        // 给用户显示信息
+        // ctx.status = error.statusCode || error.status || 500;
+        // ctx.type = "json";
+        // ctx.type = 'text'
+        if (error.expose) {
+            ctx.body = error.message;
+        } else {
+            ctx.body = error.stack;
+        }
         //全局错误处理
         ctx.app.emit('error',error);
     }
@@ -39,6 +54,38 @@ app.use(static(__dirname + '/public'))
 //     //获取相应头，印证执行顺序
 //     const rt = ctx.response.get('X-Response-Time');
 //     console.log(`输出计时：${ctx.method} ${ctx.url} - ${rt}`);
+// })
+
+//注册bodyparser
+app.use(bodyparser());
+
+const SESSION_CONFIG = {
+    key: 'kkb:sess', //设置cookis中key的名字
+    maxAge: 86400000,//有效期
+    httpOnly: true,//仅服务端修改
+    signed: true, //签名cookie
+    store: redisStore({client})//使用redis存储session数据
+}
+app.use(session(SESSION_CONFIG,app));
+
+
+// app.use(ctx => {
+//     if (ctx.path === '/favicon.ico') return;
+//     //访问
+//     let n = ctx.session.count || 0;
+//     //设置
+//     ctx.session.count = ++n;
+//     console.log(`第${n}次访问`);
+//     ctx.body = `第${n}次访问`;
+//     //查询redis数据
+//     client.keys('*',(err,keys)=>{
+//         console.log(keys);
+//         keys.forEach(key=>{
+//             client.get(key,(err,val)=>{
+//                 console.log(val);
+//             })
+//         })
+//     })
 // })
 
 // app.use(async (ctx,next) =>{
@@ -65,7 +112,7 @@ app.use(index.routes());
 app.use(users.routes());
 // 监听全局错误事件
 app.on('error',err => {
-    console.log('错误监听')
+    // console.log('错误监听')
 })
 
 app.listen(3000);
