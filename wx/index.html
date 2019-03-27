@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <script src="https://unpkg.com/vue@2.1.10/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/cube-ui/lib/cube.min.js"></script>
+    <script src="https://cdn.bootcss.com/qs/6.6.0/qs.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/cube-ui/lib/cube.min.css">
+    <style>
+        .cube-btn {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <cube-input v-model="value"></cube-input>
+        <cube-button @click='getTokens'>getTokens</cube-button>
+        <cube-button @click='getFollowers'>getFollowers</cube-button>
+        <cube-button @click='auth'>微信登录</cube-button>
+        <cube-button @click='getUser'>获取用户信息</cube-button>
+        <cube-button @click='getJsConfig'>获取JSSDk</cube-button>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                value: 'input'
+            },
+
+            methods: {
+                getTokens: async function () {
+                    console.log('getTokens')
+                    let res = await axios.get('/getToken')
+                    console.log('res', res)
+                },
+                getFollowers: async function () {
+                    console.log('getFollowers')
+                    let res = await axios.get('/getFollowers')
+                    console.log('res', res)
+                },
+                async auth() {
+                    window.location.href = '/wxAuthorize'
+                },
+                async getUser() {
+                    console.log('getUser')
+                    const qs = Qs.parse(window.location.search.substr(1))
+                    const openid = qs.openid
+                    const res = await axios.get('/getUser', {
+                        params: {
+                            openid
+                        }
+                    })
+                    console.log('res', res)
+                },
+                async getJsConfig() {
+                    console.log('wx:', wx)
+                    let res = await axios.get('/getJSConfig', {
+                        params: {
+                            url: window.location.href
+                        }
+                    })
+                    console.log('res...', res.data)
+                    res.data.jsApiList = ['onMenuShareTimeline', 'onMenuShareAppMessage']
+                    wx.config(res.data)
+                    wx.ready(() => {
+                        console.log('wx ready .....')
+                    })
+
+                    wx.getNetworkType({
+                        success: res => {
+                            console.log('getNetworkType', res.networkType)
+                        }
+                    })
+
+
+                }
+            },
+            mounted: function () {
+
+            },
+        });
+    </script>
+</body>
+
+</html>
