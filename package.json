@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/luoZengCai/nodeRecord#readme",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "co-wechat": "^2.3.0",
     "co-wechat-api": "^3.9.1",
     "co-wechat-oauth": "^2.0.1",
